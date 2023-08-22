@@ -1,0 +1,40 @@
+version: '3.7'
+
+networks:
+  selenium_essential_network:
+    external: true
+
+
+services:
+  # co_sel_service:
+  #   image: co_sel:latest
+  #   container_name: co_sel
+  #   volumes:
+  #     - ./:/app/
+  #   command: >
+  #     bash -c "python3 selenium_wrapper.py"
+  #   networks:
+  #     - selenium_essential_network
+  #   hostname: co_sel
+  #   depends_on:
+  #     - selenium_server
+# docker run -it --rm -v $(pwd):/app/ co_sel:latest bash -c "python3 selenium_wrapper.py"
+
+#==============================================
+  selenium_server:
+    image: selenium/standalone-chrome:4.9.1-20230508
+    container_name: selenium_server
+    hostname: selenium_server
+    ports:
+      - 1423:4444
+    networks:
+      - selenium_essential_network
+    restart: always
+    shm_size: '1gb'
+    environment:
+      TZ: Asia/Tehran
+      SE_NODE_SESSION_TIMEOUT: 3000
+      # START_XVFB: false
+      SE_NODE_OVERRIDE_MAX_SESSIONS: true
+      SE_NODE_MAX_SESSIONS: 10
+      # JAVA_OPTS: -XX:ActiveProcessorCount=5
