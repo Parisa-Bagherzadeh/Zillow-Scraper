@@ -376,7 +376,7 @@ class SeleniumWrapper():
           port = 1423,)
           obj1 = SeleniumWrapper(args=selenium_config)
           obj1.get(new_url)
-        #   time.sleep(1)
+          time.sleep(1)
           obj1.get_page_with_bs4(new_url, ("id","__next"), True) 
 
         
@@ -391,7 +391,7 @@ class SeleniumWrapper():
                   image = img.find("a").get("href")
                   print(image)
 
-          obj.close()
+        #   obj.close()
 
               
 
