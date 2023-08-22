@@ -38,9 +38,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from fake_headers import Headers
-
-
 # Function for timeout handling
 def timeout(max_timeout):
     def timeout_decorator(item):
@@ -75,11 +72,7 @@ class SeleniumWrapper():
         elif args.device == 'server':
             options = webdriver.ChromeOptions()
 
-            # customUserAgent = header.generate()['User-Agent']
-            # options.add_argument(f"user-agent={customUserAgent}")
-            # options.add_argument(
-            # "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Safari/537.36"
-            # )
+          
 
             options.page_load_strategy = 'normal'
             options.add_argument('--no-sandbox')
@@ -174,7 +167,7 @@ class SeleniumWrapper():
         page = None
 
         if verbose: print("Loading WebPage: ", url)
-        time.sleep(20)
+        time.sleep(4)
         self.get(url)
     
         try:
@@ -341,12 +334,11 @@ class SeleniumWrapper():
         pass    
 
 
+
+
     def main(self,url):
-          time.sleep(3)   
           obj.get(url)
           obj.get_page_with_bs4(url, ("id","__next"), True) 
-
-          ###########################################
 
           input_element = obj.find_elements_by_id("srp-search-box")
           btn = input_element[0].find_element(By.TAG_NAME,"button")
@@ -354,89 +346,44 @@ class SeleniumWrapper():
           input_text = input_element[0].find_element(By.TAG_NAME,"input")
           input_text.clear()
           input_text.send_keys(zip_code)
-          print(input_text.get_attribute("value"))
           input_text.submit()
           input_text.send_keys(Keys.ENTER)
 
-          
-          time.sleep(3)
-          new_url = obj.current_url
-
-          selenium_config = edict(
-          device = "server",
-          ip="0.0.0.0",
-          port = 1423,)
-          obj1 = SeleniumWrapper(args=selenium_config)
-    
-          obj1.get(new_url)
-          time.sleep(3)
-
-          obj1.get_page_with_bs4(new_url, ("id","__next"), True) 
-          
-
-##################################################################################
-
-          btn_element = obj1.find_element_by_css_selector("div.filter-buttons")
+          btn_element = obj.find_element_by_css_selector("div.filter-buttons")
           buttons = btn_element.find_elements(By.TAG_NAME, "button")
 
           for button in buttons:
             print(button.text)
             if button.text == "For Sale":
                 button.click()
-                # button.send_keys(Keys.ENTER)
                 if for_sale == "sale":
-                    obj1.find_element(By.CSS_SELECTOR,"input[value^='isForSale'][type='radio']").click()
-                    obj1.find_element(By.CSS_SELECTOR,"input[value^='isForSale'][type='radio']").submit()
-                    time.sleep(2)
+                    obj.find_element(By.CSS_SELECTOR,"input[value^='isForSale'][type='radio']").click()
+                    obj.find_element(By.CSS_SELECTOR,"input[value^='isForSale'][type='radio']").submit()
+                    
                 else:
-                    obj1.find_element(By.XPATH,"//input[@type = 'radio'and @value ='isForRent']").click()
-                    obj1.find_element(By.XPATH,"//input[@type = 'radio'and @value ='isForRent']").submit()
-                    time.sleep(2)
-
-                new_url2 = obj1.current_url
-                selenium_config = edict(
-                device = "server",
-                ip="0.0.0.0",
-                port = 1423,)
-                obj2 = SeleniumWrapper(args=selenium_config)
-                obj2.get(new_url2)
-                time.sleep(3)
-                obj2.get_page_with_bs4(new_url2, ("id","__next"), True) 
-
+                    obj.find_element(By.XPATH,"//input[@type = 'radio'and @value ='isForRent']").click()
+                    obj.find_element(By.XPATH,"//input[@type = 'radio'and @value ='isForRent']").submit()
+           
             break
 
-          btn_element = obj2.find_element_by_css_selector("div.filter-buttons")
-          button_price = btn_element.find_elements(By.XPATH, "//button[text()='Price']")
-          button_price[0].click()
-  
-          min = obj2.find_element(By.XPATH, "//input[@aria-label = 'Price min']")
-          min.value = min_price
-          min.submit()
 
-          max = obj2.find_element(By.XPATH, "//input[@aria-label = 'Price max']")
-          max.value = max_price
 
-          max.submit()
-
-          button_price[0].value= f'${min.value}-${max.value}'
-          button_price[0].send_keys(Keys.ENTER)
-        
- 
-          new_url3 = obj2.current_url
+          time.sleep(1)  
+          new_url = obj.current_url
           selenium_config = edict(
           device = "server",
           ip="0.0.0.0",
           port = 1423,)
-          obj3 = SeleniumWrapper(args=selenium_config)
-          obj3.get(new_url3)
-          time.sleep(3)
-          obj3.get_page_with_bs4(new_url3, ("id","__next"), True)  
+          obj1 = SeleniumWrapper(args=selenium_config)
+          obj1.get(new_url)
+        #   time.sleep(1)
+          obj1.get_page_with_bs4(new_url, ("id","__next"), True) 
 
         
         
           ###############################################################
         #  Get images  
-          list_of_imgs: Soup = obj3.get_page_content_with_bs4(("id", "grid-search-results"))
+          list_of_imgs: Soup = obj1.get_page_content_with_bs4(("id", "grid-search-results"))
           list_of_imgs = list_of_imgs.find(class_="search-list-relaxed-results").findChildren("li")
 
           for img in list_of_imgs:
@@ -444,9 +391,11 @@ class SeleniumWrapper():
                   image = img.find("a").get("href")
                   print(image)
 
-          ##################################################################    
-      
+          obj.close()
 
+              
+
+          ##################################################################    
 
 
 
