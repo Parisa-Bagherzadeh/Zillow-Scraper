@@ -386,7 +386,7 @@ class SeleniumWrapper():
                   info_dict['title'] = title.text
 
           return(info_dict)  
-        #   print(info_dict)       
+           
      
 
               
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     # Start timer
     Start = time.time()
     obj = SeleniumWrapper(args=selenium_config)   
-    obj.main(url)
+    info = obj.main(url)
 
     obj.close()
     del selenium_config
