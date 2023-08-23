@@ -1,22 +1,13 @@
 import os
 import sys
-import csv
-import requests
-from bs4 import BeautifulSoup
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service as ChromeService
+# from selenium.common.exceptions import TimeoutException
+# from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.chrome.service import Service as ChromeService
 
-
-
-import requests
-from bs4 import BeautifulSoup
-
-from pyvirtualdisplay import Display
 
 cur_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, cur_path)
@@ -76,13 +67,9 @@ class SeleniumWrapper():
 
             options.page_load_strategy = 'normal'
             options.add_argument('--no-sandbox')
-            # user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36"
-            # options.add_argument(f'user-agent={user_agent}')
             options.add_argument('--window-size=1920,1080')
             options.add_argument("--start-maximized")
             options.add_argument("--headless=new")
-
-    
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument('--disable-gpu')
             options.add_argument("--start-maximized")
@@ -167,13 +154,15 @@ class SeleniumWrapper():
         page = None
 
         if verbose: print("Loading WebPage: ", url)
-        time.sleep(4)
+        time.sleep(5)
         self.get(url)
+  
     
         try:
             element = WebDriverWait(self.driver, self.timeout).until(
                 EC.presence_of_all_elements_located(self.set_location(loc))
             )
+       
             page =Soup(self.driver.page_source, features='html.parser')
             if verbose: print("Sending Soup: ")
         except Exception as e:
@@ -204,7 +193,7 @@ class SeleniumWrapper():
     def get_page_content_with_bs4(self, loc, verbose: bool = False):
         element = None
         page = None
-        time.sleep(2)
+        time.sleep(4)
         try:
             element = WebDriverWait(self.driver, self.timeout).until(
                 EC.presence_of_element_located(self.set_location(loc))
@@ -330,11 +319,6 @@ class SeleniumWrapper():
         time.sleep(5)
 
 
-    def load_page(self):
-        pass    
-
-
-
 
     def main(self,url):
           obj.get(url)
@@ -376,25 +360,36 @@ class SeleniumWrapper():
           port = 1423,)
           obj1 = SeleniumWrapper(args=selenium_config)
           obj1.get(new_url)
-          time.sleep(1)
           obj1.get_page_with_bs4(new_url, ("id","__next"), True) 
 
         
         
           ###############################################################
         #  Get images  
+        
           list_of_imgs: Soup = obj1.get_page_content_with_bs4(("id", "grid-search-results"))
-          list_of_imgs = list_of_imgs.find(class_="search-list-relaxed-results").findChildren("li")
+          list_of_link_imgs = list_of_imgs.find(class_="search-list-relaxed-results").findChildren("li")
 
-          for img in list_of_imgs:
+          info_dict = {}
+
+          for img in list_of_link_imgs:
               if img.find("a"):
                   image = img.find("a").get("href")
                   print(image)
+                  info_dict['img'] = image
+              if img.find("ul"):
+                  info = img.find("ul").find("li")
+                  title = img.find("span")
+                  add = img.find("address")
+                  info_dict['info'] = info.text
+                  info_dict['address'] = add.text
+                  info_dict['title'] = title.text
 
-        #   obj.close()
+          return(info_dict)  
+        #   print(info_dict)       
+     
 
               
-
           ##################################################################    
 
 
