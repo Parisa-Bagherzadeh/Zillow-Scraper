@@ -193,7 +193,7 @@ class SeleniumWrapper():
     def get_page_content_with_bs4(self, loc, verbose: bool = False):
         element = None
         page = None
-        time.sleep(10)
+        time.sleep(5)
         try:
             element = WebDriverWait(self.driver, self.timeout).until(
                 EC.presence_of_element_located(self.set_location(loc))
