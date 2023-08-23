@@ -193,7 +193,7 @@ class SeleniumWrapper():
     def get_page_content_with_bs4(self, loc, verbose: bool = False):
         element = None
         page = None
-        time.sleep(4)
+        time.sleep(10)
         try:
             element = WebDriverWait(self.driver, self.timeout).until(
                 EC.presence_of_element_located(self.set_location(loc))
@@ -322,9 +322,10 @@ class SeleniumWrapper():
 
     def main(self,url):
           obj.get(url)
-          obj.get_page_with_bs4(url, ("id","__next"), True) 
+          obj.get_page_with_bs4(url, ("id","wrapper"), True) 
 
           input_element = obj.find_elements_by_id("srp-search-box")
+        #   time.sleep(3)
           btn = input_element[0].find_element(By.TAG_NAME,"button")
           btn.click()
           input_text = input_element[0].find_element(By.TAG_NAME,"input")
@@ -333,6 +334,7 @@ class SeleniumWrapper():
           input_text.submit()
           input_text.send_keys(Keys.ENTER)
 
+        #   time.sleep(2)  
           btn_element = obj.find_element_by_css_selector("div.filter-buttons")
           buttons = btn_element.find_elements(By.TAG_NAME, "button")
 
@@ -381,12 +383,13 @@ class SeleniumWrapper():
                   info = img.find("ul").find("li")
                   title = img.find("span")
                   add = img.find("address")
-                  info_dict['info'] = info.text
-                  info_dict['address'] = add.text
-                  info_dict['title'] = title.text
+              
+                  info_dict.update({"info":info.text})
+                  info_dict.update({"addresss":add.text})
+                  info_dict.update({"title": title.text})
 
           return(info_dict)  
-           
+      
      
 
               
